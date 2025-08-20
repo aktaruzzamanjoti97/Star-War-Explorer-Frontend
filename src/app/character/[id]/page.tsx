@@ -1,0 +1,338 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getCharacterImageUrl, handleImageError, swAPI } from '@/lib/api';
+import { useQuery } from '@tanstack/react-query';
+import {
+	ArrowLeft,
+	Calendar,
+	Car,
+	Eye,
+	Film,
+	Globe,
+	Palette,
+	Rocket,
+	Ruler,
+	User,
+	Users,
+	Weight,
+} from 'lucide-react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+
+export default function CharacterDetailPage() {
+	const params = useParams();
+	const router = useRouter();
+	const characterId = params.id as string;
+
+	const { data: character, isLoading: characterLoading } = useQuery({
+		queryKey: ['character', characterId],
+		queryFn: () => swAPI.getPerson(characterId),
+	});
+
+	const { data: films } = useQuery({
+		queryKey: ['character-films', characterId],
+		queryFn: () => swAPI.getPersonFilms(characterId),
+		enabled: !!characterId,
+	});
+
+	const { data: species } = useQuery({
+		queryKey: ['character-species', characterId],
+		queryFn: () => swAPI.getPersonSpecies(characterId),
+		enabled: !!characterId,
+	});
+
+	const { data: vehicles } = useQuery({
+		queryKey: ['character-vehicles', characterId],
+		queryFn: () => swAPI.getPersonVehicles(characterId),
+		enabled: !!characterId,
+	});
+
+	const { data: starships } = useQuery({
+		queryKey: ['character-starships', characterId],
+		queryFn: () => swAPI.getPersonStarships(characterId),
+		enabled: !!characterId,
+	});
+
+	if (characterLoading) {
+		return (
+			<div className='max-w-6xl mx-auto space-y-8'>
+				<Skeleton className='h-12 w-32' />
+				<div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+					<Skeleton className='h-96' />
+					<div className='lg:col-span-2 space-y-4'>
+						<Skeleton className='h-8 w-3/4' />
+						<Skeleton className='h-20 w-full' />
+						<Skeleton className='h-40 w-full' />
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	if (!character) {
+		return (
+			<div className='text-center py-12'>
+				<p className='text-red-400 text-lg'>Character not found</p>
+				<Button onClick={() => router.push('/')} className='mt-4'>
+					Return to Home
+				</Button>
+			</div>
+		);
+	}
+
+	const props = character.properties;
+
+	return (
+		<div className='max-w-6xl mx-auto space-y-8'>
+			{/* Back Button */}
+			<Button
+				onClick={() => router.back()}
+				variant='ghost'
+				className='text-gray-300 hover:text-yellow-400'>
+				<ArrowLeft className='mr-2 h-4 w-4' />
+				Back to Characters
+			</Button>
+
+			{/* Main Content */}
+			<div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+				{/* Character Image */}
+				<div className='lg:col-span-1'>
+					<Card className='overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 border-gray-700'>
+						<div className='relative'>
+							{/* <Image
+								src={getCharacterImageUrl(characterId)}
+								alt={props?.name as string}
+								className='w-full h-[500px] object-cover'
+								width={500}
+								height={500}
+								onError={handleImageError}
+							/> */}
+							<div className='absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent' />
+							<div className='absolute bottom-4 left-4 right-4'>
+								<h1 className='text-4xl font-bold text-white mb-2'>
+									{props?.name}
+								</h1>
+							</div>
+						</div>
+					</Card>
+				</div>
+
+				{/* Character Details */}
+				<div className='lg:col-span-2 space-y-6'>
+					{/* Basic Info */}
+					<Card className='bg-gray-900/50 border-gray-700'>
+						<CardHeader>
+							<CardTitle className='text-2xl text-yellow-400'>
+								Basic Information
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+								<div className='flex items-center gap-3'>
+									<Calendar className='w-5 h-5 text-yellow-500' />
+									<div>
+										<p className='text-sm text-gray-400'>
+											Birth Year
+										</p>
+										<p className='text-white font-medium'>
+											{props?.birth_year}
+										</p>
+									</div>
+								</div>
+								<div className='flex items-center gap-3'>
+									<User className='w-5 h-5 text-yellow-500' />
+									<div>
+										<p className='text-sm text-gray-400'>Gender</p>
+										<p className='text-white font-medium capitalize'>
+											{props?.gender}
+										</p>
+									</div>
+								</div>
+								<div className='flex items-center gap-3'>
+									<Globe className='w-5 h-5 text-yellow-500' />
+									<div>
+										<p className='text-sm text-gray-400'>Homeworld</p>
+										<p className='text-white font-medium'>
+											{props?.homeworldDetails?.name || 'Unknown'}
+										</p>
+									</div>
+								</div>
+								{species && species.length > 0 && (
+									<div className='flex items-center gap-3'>
+										<Users className='w-5 h-5 text-yellow-500' />
+										<div>
+											<p className='text-sm text-gray-400'>
+												Species
+											</p>
+											<p className='text-white font-medium'>
+												{species[0]?.name || 'Unknown'}
+											</p>
+										</div>
+									</div>
+								)}
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Physical Characteristics */}
+					<Card className='bg-gray-900/50 border-gray-700'>
+						<CardHeader>
+							<CardTitle className='text-2xl text-yellow-400'>
+								Physical Characteristics
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+								<div className='text-center p-4 bg-gray-800/50 rounded-lg'>
+									<Ruler className='w-6 h-6 text-blue-400 mx-auto mb-2' />
+									<p className='text-sm text-gray-400'>Height</p>
+									<p className='text-xl font-bold text-white'>
+										{props?.height} cm
+									</p>
+								</div>
+								<div className='text-center p-4 bg-gray-800/50 rounded-lg'>
+									<Weight className='w-6 h-6 text-green-400 mx-auto mb-2' />
+									<p className='text-sm text-gray-400'>Mass</p>
+									<p className='text-xl font-bold text-white'>
+										{props?.mass} kg
+									</p>
+								</div>
+								<div className='text-center p-4 bg-gray-800/50 rounded-lg'>
+									<Eye className='w-6 h-6 text-purple-400 mx-auto mb-2' />
+									<p className='text-sm text-gray-400'>Eye Color</p>
+									<p className='text-xl font-bold text-white capitalize'>
+										{props?.eye_color}
+									</p>
+								</div>
+								<div className='text-center p-4 bg-gray-800/50 rounded-lg'>
+									<Palette className='w-6 h-6 text-orange-400 mx-auto mb-2' />
+									<p className='text-sm text-gray-400'>Hair Color</p>
+									<p className='text-xl font-bold text-white capitalize'>
+										{props?.hair_color}
+									</p>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Related Content Tabs */}
+					<Card className='bg-gray-900/50 border-gray-700'>
+						<CardHeader>
+							<CardTitle className='text-2xl text-yellow-400'>
+								Appearances & Equipment
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<Tabs defaultValue='films' className='w-full'>
+								<TabsList className='grid w-full grid-cols-3 bg-gray-800'>
+									<TabsTrigger value='films'>
+										Films ({films?.length || 0})
+									</TabsTrigger>
+									<TabsTrigger value='vehicles'>
+										Vehicles ({vehicles?.length || 0})
+									</TabsTrigger>
+									<TabsTrigger value='starships'>
+										Starships ({starships?.length || 0})
+									</TabsTrigger>
+								</TabsList>
+
+								<TabsContent value='films' className='space-y-3 mt-4'>
+									{films && films.length > 0 ? (
+										films.map((film, index) => (
+											<div
+												key={index}
+												className='p-4 bg-gray-800/50 rounded-lg'>
+												<div className='flex items-start gap-3'>
+													<Film className='w-5 h-5 text-yellow-500 mt-1' />
+													<div className='flex-1'>
+														<h4 className='font-semibold text-white'>
+															{film.title}
+														</h4>
+														<p className='text-sm text-gray-400 mt-1'>
+															Episode {film.episode_id} •
+															Directed by {film.director}
+														</p>
+														<p className='text-sm text-gray-400'>
+															Released: {film.release_date}
+														</p>
+													</div>
+												</div>
+											</div>
+										))
+									) : (
+										<p className='text-gray-400'>No films found</p>
+									)}
+								</TabsContent>
+
+								<TabsContent
+									value='vehicles'
+									className='space-y-3 mt-4'>
+									{vehicles && vehicles.length > 0 ? (
+										vehicles.map((vehicle, index) => (
+											<div
+												key={index}
+												className='p-4 bg-gray-800/50 rounded-lg'>
+												<div className='flex items-start gap-3'>
+													<Car className='w-5 h-5 text-blue-500 mt-1' />
+													<div className='flex-1'>
+														<h4 className='font-semibold text-white'>
+															{vehicle.name}
+														</h4>
+														<p className='text-sm text-gray-400 mt-1'>
+															Model: {vehicle.model}
+														</p>
+														<p className='text-sm text-gray-400'>
+															Manufacturer:{' '}
+															{vehicle.manufacturer}
+														</p>
+													</div>
+												</div>
+											</div>
+										))
+									) : (
+										<p className='text-gray-400'>No vehicles found</p>
+									)}
+								</TabsContent>
+
+								<TabsContent
+									value='starships'
+									className='space-y-3 mt-4'>
+									{starships && starships.length > 0 ? (
+										starships.map((starship, index) => (
+											<div
+												key={index}
+												className='p-4 bg-gray-800/50 rounded-lg'>
+												<div className='flex items-start gap-3'>
+													<Rocket className='w-5 h-5 text-purple-500 mt-1' />
+													<div className='flex-1'>
+														<h4 className='font-semibold text-white'>
+															{starship.name}
+														</h4>
+														<p className='text-sm text-gray-400 mt-1'>
+															Model: {starship.model}
+														</p>
+														<p className='text-sm text-gray-400'>
+															Class: {starship.starship_class}
+														</p>
+													</div>
+												</div>
+											</div>
+										))
+									) : (
+										<p className='text-gray-400'>
+											No starships found
+										</p>
+									)}
+								</TabsContent>
+							</Tabs>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
+		</div>
+	);
+}

@@ -1,7 +1,17 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+	reactStrictMode: true,
+	images: {
+		domains: ['starwars-visualguide.com'],
+	},
+	async rewrites() {
+		return [
+			{
+				source: '/api/:path*',
+				destination: 'http://localhost:5000/api/:path*',
+			},
+		];
+	},
 };
 
-export default nextConfig;
+module.exports = nextConfig;
