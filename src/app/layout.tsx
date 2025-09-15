@@ -1,5 +1,6 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import HomePageSkeleton from '@/components/HomePageSkeleton';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
@@ -27,8 +28,7 @@ export default function RootLayout({
 					<div className='min-h-screen'>
 						<Header />
 						<main className='container mx-auto px-4 py-8'>
-							<Suspense
-								fallback={<div className='text-3xl'>...Loading</div>}>
+							<Suspense fallback={<HomePageSkeleton />}>
 								{children}
 							</Suspense>
 						</main>

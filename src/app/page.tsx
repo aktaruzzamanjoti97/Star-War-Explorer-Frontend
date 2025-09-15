@@ -1,10 +1,9 @@
 'use client';
 
+import HomePageSkeleton from '@/components/HomePageSkeleton';
 import Pagination from '@/components/Pagination';
 import PersonCard from '@/components/PersonCard';
 import SearchBar from '@/components/SearchBar';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { swAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { Rocket } from 'lucide-react';
@@ -30,25 +29,6 @@ export default function HomePage() {
 		queryKey: ['people', page, search, limit],
 		queryFn: () => swAPI.getPeoples(page, search, limit),
 	});
-
-	const renderSkeletons = () => (
-		<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-			{[...Array(8)].map((_, i) => (
-				<div key={i}>
-					<Card className='h-full hover:shadow-lg transition-all duration-300'>
-						<CardHeader className='relative'>
-							<Skeleton className='h-48 w-full rounded-lg' />
-						</CardHeader>
-						<CardContent className='space-y-2'>
-							<Skeleton className='h-6 w-3/4' />
-							<Skeleton className='h-4 w-1/2' />
-							<Skeleton className='h-4 w-2/3' />
-						</CardContent>
-					</Card>
-				</div>
-			))}
-		</div>
-	);
 
 	return (
 		<div className='space-y-8'>
@@ -86,7 +66,7 @@ export default function HomePage() {
 					</p>
 				</div>
 			) : isLoading ? (
-				renderSkeletons()
+				<HomePageSkeleton />
 			) : data?.results && data.results.length > 0 ? (
 				<>
 					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
