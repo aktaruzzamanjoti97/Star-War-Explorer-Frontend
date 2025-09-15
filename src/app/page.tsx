@@ -73,9 +73,12 @@ export default function HomePage() {
 				</div>
 
 				{/* Search Bar */}
-				<div className='max-w-2xl mx-auto'>
+				<Suspense
+					fallback={
+						<div className='max-w-2xl mx-auto'>Loading search…</div>
+					}>
 					<SearchBar />
-				</div>
+				</Suspense>
 
 				{/* Results */}
 				{error ? (
