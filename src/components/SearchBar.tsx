@@ -119,7 +119,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 	return (
 		<Suspense fallback={<div>Loading search…</div>}>
-			<SearchBar />
 			<form onSubmit={handleSubmit} className={`flex gap-2 ${className}`}>
 				<div className='relative flex-1'>
 					<Input
