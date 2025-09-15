@@ -8,7 +8,7 @@ import {
 	ChevronsRight,
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 interface PaginationProps {
 	currentPage: number;
@@ -67,43 +67,45 @@ const Pagination: React.FC<PaginationProps> = ({
 	};
 
 	return (
-		<div className='flex items-center justify-center gap-2 mt-8'>
-			<Button
-				variant='outline'
-				size='sm'
-				onClick={() => handlePageChange(1)}
-				disabled={currentPage === 1}
-				className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
-				<ChevronsLeft className='h-4 w-4' />
-			</Button>
-			<Button
-				variant='outline'
-				size='sm'
-				onClick={() => handlePageChange(currentPage - 1)}
-				disabled={currentPage === 1}
-				className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
-				<ChevronLeft className='h-4 w-4' />
-			</Button>
+		<Suspense fallback={<div>...Loading</div>}>
+			<div className='flex items-center justify-center gap-2 mt-8'>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => handlePageChange(1)}
+					disabled={currentPage === 1}
+					className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
+					<ChevronsLeft className='h-4 w-4' />
+				</Button>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => handlePageChange(currentPage - 1)}
+					disabled={currentPage === 1}
+					className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
+					<ChevronLeft className='h-4 w-4' />
+				</Button>
 
-			{renderPageNumbers()}
+				{renderPageNumbers()}
 
-			<Button
-				variant='outline'
-				size='sm'
-				onClick={() => handlePageChange(currentPage + 1)}
-				disabled={currentPage === totalPages}
-				className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
-				<ChevronRight className='h-4 w-4' />
-			</Button>
-			<Button
-				variant='outline'
-				size='sm'
-				onClick={() => handlePageChange(totalPages)}
-				disabled={currentPage === totalPages}
-				className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
-				<ChevronsRight className='h-4 w-4' />
-			</Button>
-		</div>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => handlePageChange(currentPage + 1)}
+					disabled={currentPage === totalPages}
+					className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
+					<ChevronRight className='h-4 w-4' />
+				</Button>
+				<Button
+					variant='outline'
+					size='sm'
+					onClick={() => handlePageChange(totalPages)}
+					disabled={currentPage === totalPages}
+					className='border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50'>
+					<ChevronsRight className='h-4 w-4' />
+				</Button>
+			</div>
+		</Suspense>
 	);
 };
 
