@@ -2,7 +2,6 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Suspense } from 'react';
 import './globals.css';
 import { Providers } from './providers';
 
@@ -27,9 +26,7 @@ export default function RootLayout({
 					<div className='min-h-screen'>
 						<Header />
 						<main className='container mx-auto px-4 py-8'>
-							<Suspense fallback={<div>...Loading</div>}>
-								{children}
-							</Suspense>
+							{children}
 						</main>
 						<Footer />
 					</div>
