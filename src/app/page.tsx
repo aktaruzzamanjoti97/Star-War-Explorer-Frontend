@@ -65,7 +65,7 @@ export default function HomePage() {
 					<div className='flex items-center gap-2 text-yellow-400'>
 						<Rocket className='w-5 h-5' />
 						<span className='text-sm'>
-							Search through {data?.total || '80+'} characters
+							Search through {data?.total || 0} characters
 						</span>
 					</div>
 				</div>
