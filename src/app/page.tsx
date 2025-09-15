@@ -1,8 +1,10 @@
 'use client';
 
-import { CharacterCard } from '@/components/CharacterCard';
-import { Pagination } from '@/components/Pagination';
-import { SearchBar } from '@/components/SearchBar';
+import Pagination from '@/components/Pagination';
+import PersonCard from '@/components/PersonCard';
+import SearchBar from '@/components/SearchBar';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { swAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import { Rocket } from 'lucide-react';
@@ -13,25 +15,36 @@ export default function HomePage() {
 	const searchParams = useSearchParams();
 	const [page, setPage] = useState(Number(searchParams.get('page')) || 1);
 	const [search, setSearch] = useState(searchParams.get('search') || '');
+	const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 5);
 
 	useEffect(() => {
 		const pageParam = Number(searchParams.get('page')) || 1;
 		const searchParam = searchParams.get('search') || '';
+		const limitParam = Number(searchParams.get('limit')) || 8;
 		setPage(pageParam);
 		setSearch(searchParam);
+		setLimit(limitParam);
 	}, [searchParams]);
 
 	const { data, isLoading, error } = useQuery({
-		queryKey: ['people', page, search],
-		queryFn: () => swAPI.getPeople(page, search),
-		// keepPreviousData: true,
+		queryKey: ['people', page, search, limit],
+		queryFn: () => swAPI.getPeoples(page, search, limit),
 	});
 
 	const renderSkeletons = () => (
 		<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
 			{[...Array(8)].map((_, i) => (
 				<div key={i}>
-					<CharacterCard character={{} as unknown as React.ComponentProps<typeof CharacterCard>['character']} loading={true} />
+					<Card className='h-full hover:shadow-lg transition-all duration-300'>
+						<CardHeader className='relative'>
+							<Skeleton className='h-48 w-full rounded-lg' />
+						</CardHeader>
+						<CardContent className='space-y-2'>
+							<Skeleton className='h-6 w-3/4' />
+							<Skeleton className='h-4 w-1/2' />
+							<Skeleton className='h-4 w-2/3' />
+						</CardContent>
+					</Card>
 				</div>
 			))}
 		</div>
@@ -75,8 +88,8 @@ export default function HomePage() {
 			) : data?.results && data.results.length > 0 ? (
 				<>
 					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
-						{data.results.map((character) => (
-							<CharacterCard key={character.uid} character={character} />
+						{data.results.map((person) => (
+							<PersonCard key={person.uid} {...person} />
 						))}
 					</div>
 

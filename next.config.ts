@@ -2,7 +2,7 @@
 const nextConfig = {
 	reactStrictMode: true,
 	images: {
-		domains: ['starwars-visualguide.com'],
+		domains: ['images.unsplash.com'],
 	},
 	async rewrites() {
 		return [
